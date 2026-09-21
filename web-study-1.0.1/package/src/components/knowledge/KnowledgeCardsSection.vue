@@ -1,0 +1,236 @@
+<template>
+  <div class="knowledge-content">
+    <div v-if="loading" class="loading-container">
+      <el-icon class="is-loading" :size="40"><Loading /></el-icon>
+      <p>加载中...</p>
+    </div>
+    <div v-else class="knowledge-cards">
+      <div
+        v-for="item in items"
+        :key="item.id"
+        class="knowledge-card"
+        :data-id="item.id"
+      >
+        <button
+          class="knowledge-more"
+          type="button"
+          aria-label="查看详情"
+          @click.stop="emit('show-details', item.id)"
+        >
+          <el-icon><MoreFilled /></el-icon>
+        </button>
+        <div class="knowledge-icon">
+          <el-icon :size="24"><Document /></el-icon>
+        </div>
+        <h3 class="knowledge-title">{{ item.title }}</h3>
+        <p class="knowledge-description">{{ item.summary }}</p>
+        <div class="knowledge-actions">
+          <!-- 先学习，跳转到详情/学习页 -->
+          <button class="btn-primary" @click="emit('open-details', item.id)">
+            开始学习
+          </button>
+
+          <!-- 再练习，进入在线编辑/实验（触发 start-learning 以打开实验覆盖层/编辑器） -->
+          <button class="btn-outline" @click="emit('start-learning', item.id)">
+            开始练习
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { Loading, Document, MoreFilled } from '@element-plus/icons-vue'
+
+defineProps({
+  loading: {
+    type: Boolean,
+    default: false
+  },
+  items: {
+    type: Array,
+    default: () => []
+  }
+})
+
+const emit = defineEmits(['show-details', 'open-details', 'start-learning'])
+</script>
+
+<style scoped>
+.knowledge-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  margin-top: 0;
+}
+
+@media (max-width: 1400px) {
+  .knowledge-cards {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 1024px) {
+  .knowledge-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .knowledge-cards {
+    grid-template-columns: 1fr;
+  }
+}
+
+.knowledge-card {
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 24px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+}
+
+.knowledge-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #1E88E5 0%, #1565C0 100%);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.knowledge-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(30, 136, 229, 0.15);
+  border-color: #1E88E5;
+}
+
+.knowledge-card:hover::before {
+  transform: scaleX(1);
+}
+
+.knowledge-more {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  color: #94a3b8;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.knowledge-more:hover {
+  color: #1E88E5;
+  border-color: #bfdbfe;
+  box-shadow: 0 6px 12px rgba(15, 23, 42, 0.08);
+}
+
+.knowledge-more :deep(svg) {
+  width: 16px;
+  height: 16px;
+}
+
+.knowledge-icon {
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, #1E88E5 0%, #1565C0 100%);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 12px rgba(30, 136, 229, 0.3);
+  transition: all 0.3s ease;
+}
+
+.knowledge-card:hover .knowledge-icon {
+  transform: scale(1.1) rotate(5deg);
+  box-shadow: 0 6px 16px rgba(30, 136, 229, 0.4);
+}
+
+.knowledge-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 8px;
+}
+
+.knowledge-description {
+  font-size: 14px;
+  color: #6b7280;
+  line-height: 1.5;
+  margin-bottom: 20px;
+  flex: 0 0 42px;
+  max-height: 42px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+}
+
+.knowledge-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.btn-primary {
+  padding: 8px 16px;
+  background: #1E88E5;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background: #1565C0;
+}
+
+.btn-outline {
+  padding: 8px 16px;
+  background: #ffffff;
+  color: #1E88E5;
+  border: 1px solid #1E88E5;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-outline:hover {
+  background: #1E88E5;
+  color: #ffffff;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 400px;
+  color: #1E88E5;
+}
+</style>

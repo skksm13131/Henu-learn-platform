@@ -1,0 +1,68 @@
+.idea/
+.m2/
+
+# Build outputs
+target/
+web-study-1.0.1/package/dist/
+web-study-1.0.1/package/node_modules/
+web-study-1.0.1/package/.npm-cache/
+*.map
+
+# Runtime and local logs
+logs/
+*.log
+*.out
+*.err
+
+# Local environment/configuration with secrets
+src/main/resources/application.properties
+target/classes/application.properties
+web-study-1.0.1/package/.env
+web-study-1.0.1/package/.env.*
+
+# Deployment bundles and sensitive maintenance scripts
+deploy/*.zip
+deploy/labcore-hotfix-*/
+deploy/**/backend/*.jar
+deploy/reset-admin-password.sh
+ops/*.zip
+ops/**/backend/*.jar
+ops/**/frontend/dist/
+ops/**/__pycache__/
+ops/**/*.pyc
+ops/labcore-hotfix-20260613/
+ops/labcore-hotfix-20260614/data/
+ops/labcore-learning-json-import/
+
+# Local test/extracted artifacts
+boottest.*
+mobile-test.html
+start-mobile-test.ps1
+labcore_init_verify.txt
+pdf2_extracted.txt
+tmp_server_manual.pdf
+target/*.png
+target/*token*.txt
+src/main/resources/db/*.broken-backup
+backups/
+*.bundle
+
+# 交接用数据库导出：含账号密码哈希、学生提交记录与原始文件名，禁止入库
+src/main/resources/db/labcore_handover_*.sql
+src/main/resources/db/labcore_handover_*.sql.gz
+src/main/resources/db/labcore_handover_*.sha256
+
+# AI 工具运行目录与配置
+.agents/
+.codex/
+.codex-run/
+.codex-gitconfig
+
+# 旧 Git 历史备份（重建仓库时保留，确认无误后可删除）
+.git.old/
+
+# Runtime uploaded user files, temp archives and extracted deployment packages
+data/assignment-submissions/
+data/assignment-materials/
+data/assignment-download-temp/
+ops/labcore-assessment-update-*/

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>JupyterLite</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="Description" content="WASM powered Jupyter running in the browser." />
+    <link
+      id="jupyter-lite-main"
+      rel="preload"
+      href="../build/lab/bundle.js?_=dba8133"
+      main="index"
+      as="script"
+    />
+    <script
+      id="jupyter-config-data"
+      type="application/json"
+      data-jupyter-lite-root=".."
+    >
+      {}
+    </script>
+    <script>
+      (async function () {
+        const { pathname, origin, search, hash } = window.location;
+        const BOOT_CLEANUP_VERSION = '20260320-1';
+        const BOOT_REFRESH_PARAM = '__liteBootRefreshed';
+
+        if (pathname.match(/(index.html|\/?)$/) == null) {
+          window.location.href = `${origin}${pathname}/${search}${hash}`;
+          return;
+        }
+
+        async function cleanupLegacyLiteState() {
+          let changed = false;
+          const scopeMarker = '/lite/';
+
+          if ('serviceWorker' in navigator) {
+            const registrations = await navigator.serviceWorker.getRegistrations();
+            for (const registration of registrations) {
+              if ((registration.scope || '').includes(scopeMarker)) {
+                changed = (await registration.unregister()) || changed;
+              }
+            }
+          }
+
+          if ('caches' in window) {
+            const cacheKeys = await caches.keys();
+            for (const key of cacheKeys) {
+              if (key === 'precache' || key.includes('jupyterlite') || key.includes('workbox')) {
+                changed = (await caches.delete(key)) || changed;
+              }
+            }
+          }
+
+          return changed;
+        }
+
+        try {
+          const cleanupKey = `jupyterlite:boot-cleanup:${BOOT_CLEANUP_VERSION}`;
+          const bootMarker = sessionStorage.getItem(cleanupKey);
+          const currentUrl = new URL(window.location.href);
+          const bootRefresh = currentUrl.searchParams.get(BOOT_REFRESH_PARAM);
+
+          if (!bootMarker) {
+            const changed = await cleanupLegacyLiteState();
+            sessionStorage.setItem(cleanupKey, 'done');
+
+            if (changed && bootRefresh !== BOOT_CLEANUP_VERSION) {
+              currentUrl.searchParams.set(BOOT_REFRESH_PARAM, BOOT_CLEANUP_VERSION);
+              window.location.replace(currentUrl.toString());
+              return;
+            }
+          } else if (bootRefresh === BOOT_CLEANUP_VERSION) {
+            currentUrl.searchParams.delete(BOOT_REFRESH_PARAM);
+            window.history.replaceState({}, document.title, currentUrl.toString());
+          }
+        } catch (error) {
+          console.warn('Failed to clean JupyterLite browser state before boot', error);
+        }
+
+        await import(
+          '../config-utils.js?_=dba8133'
+        );
+      }.call(this));
+    </script>
+    <script src="../experiment-launch.js?v=20260605-1"></script>
+    <script src="../translation-fix.js"></script>
+
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        transition: background-color 0.3s ease;
+      }
+
+      body {
+        background-color: #fff;
+        color: #000;
+      }
+
+      body.jp-mod-dark {
+        background-color: #111;
+        color: #fff;
+      }
+
+      #jupyterlite-loading-indicator {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        z-index: 1000;
+        opacity: 0; /* Hidden by default */
+        transition: opacity 0.5s ease-out;
+        display: none; /* Hidden by default */
+      }
+
+      #jupyterlite-loading-indicator.hidden {
+        animation: fadeOut 0.5s ease-out forwards;
+        pointer-events: none;
+      }
+
+      /* Show the indicator when needed */
+      #jupyterlite-loading-indicator:not(.hidden) {
+        opacity: 1;
+        display: block;
+      }
+
+      .jupyterlite-loading-indicator-spinner {
+        width: 60px;
+        height: 60px;
+        margin: 0 auto 20px;
+        border: 6px solid rgba(0, 0, 0, 0.1);
+        border-top: 6px solid #FFDC00; /* Bright yellow color */
+        border-radius: 50%;
+        animation: jupyter-spin 1s linear infinite;
+      }
+
+      body.jp-mod-dark .jupyterlite-loading-indicator-spinner {
+        border: 6px solid rgba(255, 255, 255, 0.1);
+        border-top: 6px solid #FFDC00;
+      }
+
+      .jupyterlite-loading-indicator-text {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+        font-size: 16px;
+      }
+
+      /* Adjust text color based on theme */
+      body.jp-mod-light .jupyterlite-loading-indicator-text {
+        color: #000000;
+      }
+
+      body.jp-mod-dark .jupyterlite-loading-indicator-text {
+        color: #ffffff;
+      }
+
+      @keyframes jupyter-spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+
+      @keyframes fadeOut {
+        0% { opacity: 1; }
+        100% { opacity: 0; }
+      }
+    </style>
+  </head>
+  <body class="jp-ThemedContainer" data-notebook="lab">
+    <div id="jupyterlite-loading-indicator" class="hidden">
+      <div class="jupyterlite-loading-indicator-spinner"></div>
+      <div class="jupyterlite-loading-indicator-text">Loading JupyterLite...</div>
+    </div>
+    <noscript>
+      <div style="text-align: center; padding: 20px;">
+          JupyterLite requires JavaScript to be enabled in your browser.
+      </div>
+    </noscript>
+  </body>
+</html>
