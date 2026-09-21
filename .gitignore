@@ -6,6 +6,7 @@ target/
 web-study-1.0.1/package/dist/
 web-study-1.0.1/package/node_modules/
 web-study-1.0.1/package/.npm-cache/
+web-study-1.0.1/package/.vite/
 *.map
 
 # Runtime and local logs
