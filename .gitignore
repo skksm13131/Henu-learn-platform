@@ -59,9 +59,6 @@ src/main/resources/db/labcore_handover_*.sha256
 .codex-run/
 .codex-gitconfig
 
-# 旧 Git 历史备份（重建仓库时保留，确认无误后可删除）
-.git.old/
-
 # Runtime uploaded user files, temp archives and extracted deployment packages
 data/assignment-submissions/
 data/assignment-materials/
