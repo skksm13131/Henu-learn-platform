@@ -37,11 +37,18 @@ const adminRoutes = [
     name: 'UserProgressDetail',
     component: () => import('@/views/UserProgressDetail.vue'),
     meta: { title: '用户学习详情', requiresAuth: true, requiresAdmin: true }
+  },
+  {
+    path: 'maintenance',
+    name: 'AdminMaintenance',
+    component: () => import('@/views/AdminMaintenance.vue'),
+    meta: { title: '项目维护', requiresAuth: true, requiresAdmin: true }
   }
 ]
 
 const adminRouteNames = adminRoutes.map(route => route.name)
-const adminPathPrefixes = ['/users', '/admin-dashboard', '/content-library', '/admin-assignments']
+// 由 adminRoutes 派生，避免新增后台路由时漏改前缀判断
+const adminPathPrefixes = adminRoutes.map(route => `/${route.path.split('/')[0]}`)
 let adminRoutesAdded = false
 
 const routes = [
@@ -99,6 +106,12 @@ const routes = [
         name: 'Profile',
         component: () => import('@/views/PersonalCenter.vue'),
         meta: { title: '个人中心', requiresAuth: true }
+      },
+      {
+        path: 'contributors',
+        name: 'Contributors',
+        component: () => import('@/views/Contributors.vue'),
+        meta: { title: '项目贡献者', requiresAuth: true }
       }
     ]
   }
