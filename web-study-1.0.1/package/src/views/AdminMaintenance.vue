@@ -1,10 +1,7 @@
 <template>
   <div class="maintenance-page">
     <div class="page-header">
-      <div>
-        <h1 class="page-title">贡献者维护</h1>
-        <p class="page-subtitle">维护项目贡献者名单。本页仅管理员可访问。</p>
-      </div>
+      <h1 class="page-title">贡献者维护</h1>
       <el-button type="primary" @click="openCreate">新增贡献者</el-button>
     </div>
 
@@ -309,23 +306,17 @@ onMounted(() => {
 
 .page-header {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   gap: 16px;
   margin-bottom: 16px;
 }
 
 .page-title {
-  margin: 0 0 8px;
+  margin: 0;
   font-size: 22px;
   font-weight: 600;
   color: #1f2d3d;
-}
-
-.page-subtitle {
-  margin: 0;
-  font-size: 14px;
-  color: #7a8699;
 }
 
 .section-head {
