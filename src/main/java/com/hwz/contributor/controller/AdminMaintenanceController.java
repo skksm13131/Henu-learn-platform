@@ -13,10 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Map;
 
 /**
- * 维护页接口。全部操作仅限 ADMIN（Service 内统一调用 requireAdmin）。
+ * 维护页接口：贡献者名单维护。全部操作仅限 ADMIN（Service 内统一调用 requireAdmin）。
  */
 @RestController
 @RequestMapping("/admin")
@@ -26,12 +25,6 @@ public class AdminMaintenanceController {
 
     public AdminMaintenanceController(ContributorService contributorService) {
         this.contributorService = contributorService;
-    }
-
-    /** 平台数据概览 */
-    @GetMapping("/maintenance/summary")
-    public Result<Map<String, Object>> summary() {
-        return Result.ok(contributorService.platformSummary());
     }
 
     /** 贡献者列表（含不可见记录） */

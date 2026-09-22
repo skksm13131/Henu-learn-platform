@@ -8,13 +8,6 @@ export function getContributors() {
 }
 
 /**
- * 维护页：平台数据概览（仅 ADMIN）
- */
-export function getMaintenanceSummary() {
-  return request({ url: '/admin/maintenance/summary', method: 'get' })
-}
-
-/**
  * 维护页：贡献者列表，含不可见记录（仅 ADMIN）
  */
 export function getAdminContributors() {

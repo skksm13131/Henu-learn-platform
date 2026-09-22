@@ -1,17 +1,10 @@
 package com.hwz.contributor.service;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.hwz.admin.service.AdminAccessService;
-import com.hwz.assignment.entity.Assignment;
-import com.hwz.assignment.mapper.AssignmentMapper;
-import com.hwz.common.entity.User;
 import com.hwz.common.mapper.UserMapper;
 import com.hwz.contributor.dto.ContributorDtos;
 import com.hwz.contributor.entity.Contributor;
 import com.hwz.contributor.mapper.ContributorMapper;
-import com.hwz.user.entity.LearningItem;
-import com.hwz.user.mapper.LearningItemMapper;
-import com.hwz.user.mapper.LearningRecordMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -19,12 +12,11 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * 贡献者档案与维护页数据。
+ * 贡献者档案维护。
  *
  * <p>权限口径：贡献者档案的增删改仅限 ADMIN，复用 {@link AdminAccessService#requireAdmin()}，
  * 不引入新的角色，因此不影响现有 34 处后台权限校验。
@@ -39,22 +31,13 @@ public class ContributorService {
 
     private final ContributorMapper contributorMapper;
     private final UserMapper userMapper;
-    private final LearningItemMapper learningItemMapper;
-    private final LearningRecordMapper learningRecordMapper;
-    private final AssignmentMapper assignmentMapper;
     private final AdminAccessService accessService;
 
     public ContributorService(ContributorMapper contributorMapper,
                               UserMapper userMapper,
-                              LearningItemMapper learningItemMapper,
-                              LearningRecordMapper learningRecordMapper,
-                              AssignmentMapper assignmentMapper,
                               AdminAccessService accessService) {
         this.contributorMapper = contributorMapper;
         this.userMapper = userMapper;
-        this.learningItemMapper = learningItemMapper;
-        this.learningRecordMapper = learningRecordMapper;
-        this.assignmentMapper = assignmentMapper;
         this.accessService = accessService;
     }
 
@@ -88,37 +71,6 @@ public class ContributorService {
             views.add(toAdminView(row));
         }
         return views;
-    }
-
-    /**
-     * 平台数据概览，供维护页展示。
-     */
-    public Map<String, Object> platformSummary() {
-        Map<String, Object> summary = new LinkedHashMap<>();
-        summary.put("learningItemTotal", learningItemMapper.selectCount(null));
-        summary.put("learningItemPublished",
-                learningItemMapper.selectCount(new LambdaQueryWrapper<LearningItem>()
-                        .eq(LearningItem::getStatus, "PUBLISHED")));
-        summary.put("learningItemArchived",
-                learningItemMapper.selectCount(new LambdaQueryWrapper<LearningItem>()
-                        .eq(LearningItem::getStatus, "ARCHIVED")));
-        summary.put("userTotal", userMapper.selectCount(null));
-        summary.put("userActive",
-                userMapper.selectCount(new LambdaQueryWrapper<User>()
-                        .eq(User::getStatus, User.Status.ACTIVE)));
-        summary.put("adminTotal",
-                userMapper.selectCount(new LambdaQueryWrapper<User>()
-                        .eq(User::getRole, User.Role.ADMIN)));
-        summary.put("assignmentTotal", assignmentMapper.selectCount(null));
-        summary.put("assignmentPublished",
-                assignmentMapper.selectCount(new LambdaQueryWrapper<Assignment>()
-                        .eq(Assignment::getStatus, "PUBLISHED")));
-        summary.put("learningRecordTotal", learningRecordMapper.selectCount(null));
-        summary.put("contributorTotal", contributorMapper.selectCount(null));
-        summary.put("contributorVisible",
-                contributorMapper.selectCount(new LambdaQueryWrapper<Contributor>()
-                        .eq(Contributor::getVisible, 1)));
-        return summary;
     }
 
     // ------------------------------------------------------------------ 增删改（仅 ADMIN）
